@@ -1,3 +1,4 @@
+library(rpart)
 Income=read.csv("Income_Data.txt")
 ModIncome=data.frame(Inc=Income$X9,sex=Income$X2,marital=Income$X1,age=Income$X5,edu=Income$X4,occ=Income$X5.1,dwelltime=Income$X5.2,dual=Income$X3,hh=Income$X3.1,hh18=Income$X0,house=Income$X1.1,hometype=Income$X1.2,Ethnic=Income$X7,lang=Income$NA.)
 
@@ -23,6 +24,9 @@ plot(incfit)
 text(incfit)
 summary(incfit)
 
+mydata=data.frame(Inc=" ",sex="Male",marital="Married",age="35-44",edu="Grad",occ="Professional",dwelltime="1-3 years",dual="No",hh="3",hh18="3",house="Own",hometype="House",ethnic="Asian",lang="Other")
+tree.pred=predict(incfit,mydata, type="class")
+tree.pred
 
 # Root had 8992 elements
   # Prediction for Root=<10K
