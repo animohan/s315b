@@ -88,10 +88,34 @@ library(rpart)
   
   + We manage the Bias-Variance trade-off to get a lower expected test error with the training data or test data.
 
-7. Q7:
+8. Q8:
   + The variable to use for primary split is selected after reviewing all the variables and considering all possible splits to get the best reduction in prediction error. Surrogate variable does not contain as much information as the primary split variable. Surrogate variables are useful in the scenario where the primary variable is a missing in particular data point. Hence we look for best substitute variable or the surrogate variable for the primary variable.
   
+12. Q12
+  + Predicting observation with missing value of splitting variable by treating this as a terminal node:
+      + This is a fastest approach and is O(1) time operation. This will be much faster than surrogate variables since that requires finding the alternative variables that similar split to primary variables.
+      + Other dimensions of this observation, will not be considered for prediction which means that there is higher probability of the predicition being incorrect.
   
+  + Send observation to daughter node that contains majority of the training data.
+      + This is a faster approach compared to surrogate variables.
+      + After this split, other dimensions will be considered for further split. This is similar to Surrogate split but different from the earlier approach of treating this as terminal node.
+      + Since the observation is classified with majority of training data, the chances of error are less than ~50%. However, with surrogate variables, if a surrogate variable has same split as the primary variable, it is possible to classify the observation to the correct node with error being very low. However, if the surrogate variable does not match with primary split for atleast 50% of observations, then the approach of sending the observation with majority might work better.
+    
 
- 
+13. Q13:
+  + Relative Advantage/Disadvantage of treating "missing as a class"
+    + Advantage: This approach is faster than surrogate split as we just treat the missing as a category. Surrogate splits require calculating another variable that does a similar split to primary split variable, hence slower.
+    + Advantage: By treating missing as a category, it becomes easier to predict with test data, when it was some dimensions missing.
+    + Disadvantage: By treating observations with 'missing' values as one class, we incorrectly club them together in one category as "missingness" is not a true feature. Surrogate split does better to find the another variable that has close match to the primary split variable.
+    + Disadvantage: The three-way split for orderable variables, collects observation with missing entries together, when there is no orderable relationship between the observations.
+    + Disadvantage: The three-way split and categorizing missing information as a category -vely impacts the "interpretability" of the tree.
+  
+  + This strategy does not encourage correlated sets to substitute each other; infact it just categorizes all observations with missing variables as one class, where there may not be any similarty between the datapoints.
+  
+  + The strategy is specifically to categorize "missing" as a class of the categorical; if there are no missing values in an observation then this method cannot be directly used.
+  
+  + For predicting with missing values in future data, we can use methods like:
+    + Assume that node as the terminal node and provide the estimate for the prediction
+    + 
+  
  
