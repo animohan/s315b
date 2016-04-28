@@ -7,6 +7,7 @@ output: html_document
 1. Q1
 
 ```{r}
+library(rpart)
     Income=read.csv("Income_Data.txt")
     ModIncome=data.frame(Inc=Income$X9,sex=Income$X2,marital=Income$X1,age=Income$X5,edu=Income$X4,occ=Income$X5.1,dwelltime=Income$X5.2,dual=Income$X3,hh=Income$X3.1,hh18=Income$X0,house=Income$X1.1,hometype=Income$X1.2,Ethnic=Income$X7,lang=Income$NA.)
     
@@ -59,7 +60,7 @@ output: html_document
     
     + Theoretically, A Target function should give an accurate function for prediction; However, even when a true target function is known, we might not be able to accurately predict values because of Noise.
     
-    + Our goal is to get the best estimate of the target function $hat{Y}~Y=F(X)$. And for estimating this, we have data point pairs $<x_i,y_i$
+    + Our goal is to get the best estimate of the target function $\hat{Y} \approx Y=F(X)$. And for estimating this, we have data point pairs $<x_i,y_i>$
 
 4. Q4
   + Empirical risk evaluated on training data is a reasonable surrogate for the actual(population) prediction risk if certain assumptions are true:
@@ -70,16 +71,27 @@ output: html_document
     + Generally, it is a good idea to keep a part of training set (test set) separate only to evaluate the empirical risk of a learning method. This test set is not used to tune the parameters of learning method but to act as a surrogate to estimate the empirical risk for the actual population.
     
 5. Q5
+ + We try to approximate the target function using by assuming certain model. Note that we do not have a complete joint distribution of all Input variables $\hat{X}=<x_1,x_2,...> and out put variable Y. We only have some datapoint from the joint distribution. 
+ 
+ + 1st restriction is that any model we choose for approximating the target function only represents a subset of the entire target function space. This is a restriction of the model (e.g linear model). Hence, by choosing a particular model we restriction the set of functions that can be selected.
+ 
+ + 2nd restriction is because we only have some sample data points from the joint distribution. We define a loss function and try to find the best function that fits to the data points. However, there are many functions that might fit the particular data set which will minmize the loss function. And if the data set is tweaked a new set of functions will emerge. Hence choosing a model restricts the function class. If we choose from a class of all possible functions, we will find many functions that fit the training data well, but gives poor results on test data.
+
+6. Q6
   + Bias is the error introduced by approximating a complex target function with a simplet model which does not capture the true underlying form of the target function. Example approximating a quadratic function with least squares. Because we chose a simpler model, we will never be able to accurately estimate the target function beyond an error level. This is called the Bias of the model.
   
-  + Variance is the amount by which a predicted function $hat{f}$ would change if we were using a different training data set. Different training sets give different value of the function and the variations in the function value is called the Variance.
+  + Variance is the amount by which a predicted function $\hat{f}$ would change if we were using a different training data set. Different training sets give different value of the function and the variations in the function value is called the Variance.
   
-  + Bias-Variance tradeoff: For finding the best function that approximates the target function we use different models or classes of function. Bias is introduced by choosing a particular class of functions to approximate the target function. Typically, more flexible a function class is, lower will be the bias associated with that function class. However, by increasing flexibility, variance of the output $hat{f}$ is high when we use different training set with this flexible function class. Bias-Variance tradeoff refers to this trade-off where following things happen:
+  + Bias-Variance tradeoff: For finding the best function that approximates the target function we use different models or classes of function. Bias is introduced by choosing a particular class of functions to approximate the target function. Typically, more flexible a function class is, lower will be the bias associated with that function class. However, by increasing flexibility, variance of the output $\hat{f}$ is high when we use different training set with this flexible function class. Bias-Variance tradeoff refers to this trade-off where following things happen:
     + compromise on increasing in Variance by choosing a more flexible class of functions to represent the target function
     + compromise on increase in Bias by choosing a simpler model which reduces the variance.
   
   + We manage the Bias-Variance trade-off to get a lower expected test error with the training data or test data.
 
+7. Q7:
+  + The variable to use for primary split is selected after reviewing all the variables and considering all possible splits to get the best reduction in prediction error. Surrogate variable does not contain as much information as the primary split variable. Surrogate variables are useful in the scenario where the primary variable is a missing in particular data point. Hence we look for best substitute variable or the surrogate variable for the primary variable.
+  
+  
 
  
  
