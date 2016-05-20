@@ -214,12 +214,152 @@ knitr::opts_chunk$set(cache=TRUE)
     + Lower Median income is a strong indicator for the Housing value and seems to be indpendent of longitudinal position in the region.
     + Eastwards Longitudinal position seems to be a stronger indicator of housing value  and seems to be independent of the average occupancy of the house
   
-3.
-4.
-5.
-6.
-7.
-8.
+8. Q8
+
+  + 8a.
+
+```{r}
+    Income=read.csv("Income_Data.txt")
+    ModIncome=data.frame(Inc=Income$X9,sex=Income$X2,marital=Income$X1,age=Income$X5,edu=Income$X4,occ=Income$X5.1,dwelltime=Income$X5.2,dual=Income$X3,hh=Income$X3.1,hh18=Income$X0,house=Income$X1.1,hometype=Income$X1.2,Ethnic=Income$X7,lang=Income$NA.)
+    
+    Inc=ModIncome$Inc
+    sex=factor(ModIncome$sex, levels=1:2, labels=c("Male","Female"))
+    marital=factor(ModIncome$marital, levels=1:5,labels=c("Married","live-in","Divorced","Seperated","Single"))
+    age=factor(ModIncome$age,levels=1:7,labels=c("14-17","18-24","25-34","35-44","45-54","55-64","over 65"))
+    edu=factor(ModIncome$edu,levels=1:6,labels=c("less grade 8","grade 9-11","grad high","1-3 college","College grad","Grad"))
+    occ=factor(ModIncome$occ,levels=1:9,labels=c("Professional","Sales","laborer","Clerk","Home","Student","Military","Retired","Unemployed"))
+    dwelltime=factor(ModIncome$dwelltime,levels=1:5,labels=c("<1year","1-3 years","4-6 years","7-10 years",">10 years"))
+    dual=factor(ModIncome$dual, levels=1:3, labels=c("Not Married","Yes","No"))
+    hh=factor(ModIncome$hh, levels=1:9, labels=c("1","2","3","4","5","6","7","8",">9"))
+    hh18=factor(ModIncome$hh18, levels=1:9, labels=c("1","2","3","4","5","6","7","8",">9"))
+    house=factor(ModIncome$house, levels=1:3, labels=c("Own","Rent","Live with family"))
+    hometype=factor(ModIncome$house,levels=1:5, labels =c("House","Condo","Apa","Mobile","Other"))
+    ethnic=factor(ModIncome$Ethnic, levels=1:8, labels=c("American Ind","Asian","Black","East indian","Hispanic","Pacific Island","White","Other"))
+    lang=factor(ModIncome$lang,levels=1:3, labels=c("English","Spanish","Other"))
+    
+    FinalInc=data.frame(Inc=Inc,sex=sex,marital=marital,age=age,edu=edu,occ=occ, dwelltime=dwelltime, dual=dual, hh=hh, hh18=hh18,house=house, hometype=hometype,ethnic=ethnic, lang=lang)
+    
+    FinalInc=FinalInc[sample(nrow(FinalInc)),]
+    
+    set.seed(1)
+    gbminc0=gbm(Inc~.,data=FinalInc, train.fraction=0.8, bag.fraction=0.5, interaction.depth = 4, shrinkage = 0.01, n.trees=2500, cv.folds=5, distribution = "gaussian", verbose=F)
+
+    best.iter=gbm.perf(gbminc0,method="test")
+    gbminc0.predict=predict(gbminc0,FinalInc,type="response", n.trees =best.iter)
+    
+    gbminc0.round=round(gbminc0.predict)
+    
+    # Error:
+    mean((gbminc0.predict-FinalInc$Inc)^2)
+    print(paste0("Boosting Error=",mean((gbminc0.predict-FinalInc$Inc)^2)))
+    
+    
+    #RPart tree error
+    library(rpart)
+    #Optimal tree was a tree with 18 nodes with cp=0.00199
+    incfit=rpart(Inc~.,FinalInc, cp=0.00199)
+    #summary(incfit)
+    
+    print(paste0("Error using trees:",7.69*0.5236 ))    
+```
+   
+    + MSE Error with Boosting: 3.363
+    + MSE Error with Trees: 4.02
+    + Boosting is doing beter than Trees in in this instance
+
+  + 8b.
+  
+```{r}
+    summary(gbminc0)
+```
+   
+   
+    + The most important variables to predict income seems to be:
+      + If the person owns the house or rents it or live with family.
+      + Age of the person
+      + Occupation
+      
+    + It is not inconsistent with national average results. Couple of possible reasons:
+      + It could be very well that after adjustment to the critical factors mentioned here, women get paid less than men. i.e if a man and a woman have the same home ownership, age, occupation etc, men might still get paid higher. 
+      + Other possible reason could be that data from San-Francisco might not be representative of the national average data. San-Francisco is primarily tech based industry where the disparity between men/women salaries are less disparate than in other fields.
+
+
 9.
 
+  + 9a.
+```{r}
 
+Income=read.csv("Occupation_Data.txt")
+  incnames<-c ("occ", "hometype", "sex", "marital", "age", "edu", "Inc",
+              "dwelltime","dual", "hh", "hh18", "house",
+              "ethnic", "lang")
+
+    ModIncome=Income
+    colnames(ModIncome)=incnames
+    
+    Inc=factor(ModIncome$Inc, levels=1:9, labels=c("<10K","10-15K","15-20K","20-25K","25-30K","30-40K","40-50K","50K-75K",">75K"))
+    sex=factor(ModIncome$sex, levels=1:2, labels=c("Male","Female"))
+    marital=factor(ModIncome$marital, levels=1:5,labels=c("Married","live-in","Divorced","Seperated","Single"))
+    age=factor(ModIncome$age,levels=1:7,labels=c("14-17","18-24","25-34","35-44","45-54","55-64","over 65"))
+    edu=factor(ModIncome$edu,levels=1:6,labels=c("less grade 8","grade 9-11","grad high","1-3 college","College grad","Grad"))
+    occ=factor(ModIncome$occ,levels=1:9,labels=c("Professional","Sales","laborer","Clerk","Home","Student","Military","Retired","Unemployed"))
+    dwelltime=factor(ModIncome$dwelltime,levels=1:5,labels=c("<1year","1-3 years","4-6 years","7-10 years",">10 years"))
+    dual=factor(ModIncome$dual, levels=1:3, labels=c("Not Married","Yes","No"))
+    hh=factor(ModIncome$hh, levels=1:9, labels=c("1","2","3","4","5","6","7","8",">9"))
+    hh18=factor(ModIncome$hh18, levels=1:9, labels=c("1","2","3","4","5","6","7","8",">9"))
+    house=factor(ModIncome$house, levels=1:3, labels=c("Own","Rent","Live with family"))
+    hometype=factor(ModIncome$house,levels=1:5, labels =c("House","Condo","Apa","Mobile","Other"))
+    ethnic=factor(ModIncome$Ethnic, levels=1:8, labels=c("American Ind","Asian","Black","East indian","Hispanic","Pacific Island","White","Other"))
+    lang=factor(ModIncome$lang,levels=1:3, labels=c("English","Spanish","Other"))
+    
+    FinalInc=ModIncome
+    
+    train=sample(1:nrow(FinalInc),7000)
+    test=-train
+    
+    Finalocc.train=FinalInc[train,]
+    Finalocc.test=FinalInc[test,]
+    
+    set.seed(1)
+    gbmocc0=gbm(occ~.,data=Finalocc.train, bag.fraction=0.5, interaction.depth = 4, shrinkage = 0.01, n.trees=2500, cv.folds=5, distribution = "multinomial", verbose=F)
+
+    best.iter=gbm.perf(gbmocc0,method="cv")
+    
+    #Predict on the test data
+    gbmocc0.predict=predict(gbmocc0,Finalocc.test,type="response", n.trees =best.iter)
+
+    #Assign the class with maximum probability:
+    pred.occ=apply(gbmocc0.predict,1,which.max)
+    
+    # Error:
+    actual.occ=Finalocc.test$occ
+    occ.table=table(actual.occ, pred.occ)
+    
+    #Classficiation Error
+    print(paste0("Overall Misclassification rate",1-sum(diag(occ.table))/sum(occ.table)))
+    
+    #Misclassification for each class
+    print(paste0("Misclassification rate for Professional/Managerial",1-occ.table[1,1]/sum(occ.table[1,]) ))
+    print(paste0("Misclassification rate for Sales Worker",1-occ.table[2,2]/sum(occ.table[2,]) ))
+    print(paste0("Misclassification rate for Factory worker/Laborer/Driver",1-occ.table[3,3]/sum(occ.table[3,]) ))
+    print(paste0("Misclassification rate for Clerical/Service Worker",1-occ.table[4,4]/sum(occ.table[4,]) ))
+    print(paste0("Misclassification rate for Homemaker",1-occ.table[5,5]/sum(occ.table[5,]) ))
+    print(paste0("Misclassification rate for Student/HS or College",1-occ.table[6,6]/sum(occ.table[6,]) ))
+    print(paste0("Misclassification rate for Military",1-occ.table[7,7]/sum(occ.table[7,]) ))
+    print(paste0("Misclassification rate for retired",1-occ.table[8,8]/sum(occ.table[8,]) ))
+    print(paste0("Misclassification rate for Unemployed",1-occ.table[9,9]/sum(occ.table[9,]) ))
+    
+    
+
+```
+  
+  + 9b.
+
+```{r}
+  summary(gbmocc0)
+```
+
+  + Most important variables as an indicator for Occupation
+    + Age:
+    + Education:
+    + Income
