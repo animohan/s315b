@@ -1,0 +1,225 @@
+---
+title: "Hw2"
+author: "Anish Mohan"
+date: "May 17, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE)
+```
+
+6.
+  + 6a.
+  
+    ```{r}
+    library(gbm)
+    inspam=read.csv("Spam_Train.txt")
+    spname<-c ("make", "address", "all", "3d", "our", "over", "remove",
+              "internet","order", "mail", "receive", "will",
+              "people", "report", "addresses","free", "business",
+              "email", "you", "credit", "your", "font","000","money",
+              "hp", "hpl", "george", "650", "lab", "labs",
+              "telnet", "857", "data", "415", "85", "technology", "1999",
+              "parts","pm", "direct", "cs", "meeting", "original", "project",
+              "re","edu", "table", "conference", ";", "(", "[", "!", "$", "#",
+              "CAPAVE", "CAPMAX", "CAPTOT","type")
+    colnames(inspam)=spname
+    
+    
+    set.seed(1)
+    x=inspam[sample(nrow(inspam)),]
+    
+    set.seed(1)
+    gbm0=gbm(type~.,data = x,interaction.depth = 4, shrinkage =0.001, n.trees=2500, cv.folds=5, distribution="bernoulli", verbose=F)
+    gbm0.predict=predict(gbm0,x,type="response",n.trees = 300)
+    trainresp=rep(0,length(gbm0.predict))
+    trainresp[gbm0.predict>=0.5]=1
+    conftable=table(trainresp, x$type)
+    best.iter_train=gbm.perf(gbm0,method="cv")
+    overallerror=(conftable[1,2]+conftable[1,2])/sum(conftable)
+    nonspam_as_spam=(conftable[2,1])/sum(conftable[,1])
+    spam_as_notspam=(conftable[1,2])/sum(conftable[,2])
+    print(paste0("Overall Error Rate=",overallerror))
+    print(paste0("Non-spam marked as spam=",nonspam_as_spam))
+    print(paste0("Spam marked as not-spam=",spam_as_notspam))
+    ```
+
+
+
+```{r}
+    
+    set.seed(1)
+    inspamtest=read.csv("Spam.Test.txt")
+    spname<-c ("make", "address", "all", "3d", "our", "over", "remove",
+              "internet","order", "mail", "receive", "will",
+              "people", "report", "addresses","free", "business",
+              "email", "you", "credit", "your", "font","000","money",
+              "hp", "hpl", "george", "650", "lab", "labs",
+              "telnet", "857", "data", "415", "85", "technology", "1999",
+              "parts","pm", "direct", "cs", "meeting", "original", "project",
+              "re","edu", "table", "conference", ";", "(", "[", "!", "$", "#",
+              "CAPAVE", "CAPMAX", "CAPTOT","type")
+    colnames(inspamtest)=spname
+    w=inspamtest[sample(nrow(inspamtest)),]
+
+    #Predicting using gbm from training
+    gbm0.test.predict=predict(gbm0,w,type="response",n.trees = best.iter_train)
+    trainresp1=rep(0,length(gbm0.test.predict))
+    trainresp1[gbm0.test.predict>=0.5]=1
+    conftable2=table(trainresp1, w$type)
+    
+    overallerror=(conftable2[1,2]+conftable2[1,2])/sum(conftable2)
+    nonspam_as_spam=(conftable2[2,1])/sum(conftable2[,1])
+    spam_as_notspam=(conftable2[1,2])/sum(conftable2[,2])
+    print(paste0("Overall Error Rate=",overallerror))
+    print(paste0("Non-spam marked as spam=",nonspam_as_spam))
+    print(paste0("Spam marked as not-spam=",spam_as_notspam))
+    
+```
+
+
+    + Misclassfication rates: Test Data
+      + Overall=(20+7)/(909+20+7+597)=0.017
+      + Non-spam marked as spam: 7/(909+7)=0.0076
+      + Spam marked as non-spam: (20)/(20+597)=0.032
+
+  + 6b. i
+  
+    ```{r}
+    set.seed(1)
+    wghts=rep(1,length(x$type))
+    
+    wghts[x$type==0]=25;
+    gbm1=gbm(type~.,data = x,interaction.depth = 4, shrinkage =0.001, weights=wghts, n.trees=2500,cv.folds=5, distribution="bernoulli", verbose=F)
+    
+    best.iter_train=gbm.perf(gbm1,method="cv")
+    gbm1.predict=predict(gbm1,w,type="response",n.trees = best.iter_train)
+    trainresp1=rep(0,length(gbm1.predict))
+    trainresp1[gbm1.predict>=0.5]=1
+    conftable2=table(trainresp1, w$type)
+    
+    overallerror=(conftable2[1,2]+conftable2[1,2])/sum(conftable2)
+    nonspam_as_spam=(conftable2[2,1])/sum(conftable2[,1])
+    spam_as_notspam=(conftable2[1,2])/sum(conftable2[,2])
+    print(paste0("Overall Error Rate=",overallerror))
+    print(paste0("Non-spam marked as spam=",nonspam_as_spam))
+    print(paste0("Spam marked as not-spam=",spam_as_notspam))
+    
+    ```
+  
+      + By giving more weight to missclassifcation of Non-Spam as a spam mail, the overall accuracy of the model is reduced however, we decreased the missclassification error due to a non-spam mail being marked as a spam mail.
+  
+  
+  + 6b. ii
+  
+    ```{r}
+    impvar=summary(gbm1)
+    impvar[1:5,]
+    ```
+    
+      + The 3 most important variables seems to be having following words in the spam email:
+        + $ string (#53)
+        + phrase: remove (#7)
+        + ! exclamation mark. (#52)
+
+  + 6b iii
+  
+    ```{r}
+    par(mfrow=c(2,2))
+    plot(x=gbm1, i.var=53, n.trees=best.iter_train, main="Partial Dependence  of '$'")
+    plot(x=gbm1, i.var=7, n.trees=best.iter_train, main="Partial Dependence  of Phrase 'Remove'")
+    plot(x=gbm1, i.var=52, n.trees=best.iter_train, main="Partial Dependence  of '!'")
+    
+```
+   
+    + There is a significant +ve correlation and mail having $ and probability of it being a spam email. This is also true for other two terms ie presence of "!" and word "Remove" has high correlation with the mail being a spam mail.
+    
+    ```{r}    
+    par(mfrow=c(2,2))
+    plot(gbm1, c(52,53),best.iter_train, main="Partial Dependence  of '!' and '$'")
+    plot(gbm1, c(7,53),best.iter_train, main="Partial Dependence  of 'remove' and '$'")
+    plot(gbm1, c(7,52),best.iter_train, main="Partial Dependence  of 'remove' and '!'")
+    ```
+  
+    + The plots with 2 variables indicates that
+      + Lower frequency of '!' has high indication of being a spam and seems to be independent of the frequency of occurence of '$' in mails
+      + Lower frequency of word 'remove' has high indication of being a spam and seems to be independent of the frequency of occurence of '$' in mails
+      + Lower frequency of word 'remove' has high indication of being a spam and seems to be independent of the frequency of occurence of '!' in mails
+      
+
+7.
+
+  + 7a.
+  
+    
+    ```{r}
+    inpcal=read.csv("California_Data.txt")
+    calname=c("hval","inc","hage","#rooms","#bed","pop","occu","lat","long")
+    colnames(inpcal)=calname
+    set.seed(1)
+    inpcal=inpcal[sample(nrow(inpcal)),]
+    
+    set.seed(1)
+    gbmcal0=gbm(hval~.,data=inpcal, train.fraction=0.8, interaction.depth = 4, shrinkage = 0.001, n.trees=2500, cv.folds=5, distribution = "gaussian", verbose=F)
+
+    best.iter=gbm.perf(gbmcal0,method="test")
+    gbmcal0.predict=predict(gbmcal0,inpcal,n.trees = best.iter)
+    
+    # Error:
+    mean((gbmcal0.predict-inpcal$hval)^2)
+    print(paste0("Traning Error=",mean((gbmcal0.predict-inpcal$hval)^2)))
+    ```
+
+    + For this exercise, I have divided the data in to Test and training set. The gbm model is trained on the training set.
+    + Training set Error is 0.459
+
+  + 7b.
+  
+```{r}
+    par(mfrow=(c(1,1)))
+    impvar=summary(gbmcal0)
+    impvar[1:5,]
+```
+  
+    + Most important factors of influence on housing prices are:
+      + Median Income of the block/neighborhood
+      + Average occupancy
+      + Longitude of the house location.
+  
+  + 7c.
+  
+```{r}
+    par(mfrow=c(2,2))
+    plot(x=gbmcal0, i.var=1, n.trees=best.iter, main="Partial Dependence  of 'Income'")
+    plot(x=gbmcal0, i.var=6, n.trees=best.iter, main="Partial Dependence  of 'Number of Occupants")
+    plot(x=gbmcal0, i.var=8, n.trees=best.iter, main="Partial Dependence  of 'Longitude'")
+```
+  
+    + Housing value is influenced by Median income of the block. Higher median income indicates that house values are lower.
+    + Average occupancy is negatively correlated with house value. Higher average occupance indicates lower house values are lower.
+    + California's location is around 124'W to 114'W. As we go move east, the housing prices decreases. This effect may be because, houses are more expensive near the California coast and cheaper in the inlands.
+    
+  
+    
+```{r}
+    par(mfrow=c(2,2))
+    plot(x=gbmcal0,c(1,6), n.trees=best.iter, main="Partial Dependence  of Income and Number of Occupants")
+    plot(x=gbmcal0, c(1,8), n.trees=best.iter, main="Partial Dependence  of Income and Longitude")
+    plot(x=gbmcal0, c(8,6), n.trees=best.iter, main="Partial Dependence  of Number of occupants and Longitude")
+
+```
+  
+    + Lower Median income is a strong indicator for the Housing value and seems to be indpendent of the average occupancy in the region.
+    + Lower Median income is a strong indicator for the Housing value and seems to be indpendent of longitudinal position in the region.
+    + Eastwards Longitudinal position seems to be a stronger indicator of housing value  and seems to be independent of the average occupancy of the house
+  
+3.
+4.
+5.
+6.
+7.
+8.
+9.
+
+
