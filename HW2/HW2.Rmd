@@ -9,7 +9,38 @@ output: html_document
 knitr::opts_chunk$set(cache=TRUE)
 ```
 
-6.
+1. Q1 
+  + Advantages:
+    + Fast: Since only a subset of variables are selected, trees can be built comparitively (compared to full set tree with all variables) quickly
+    + Parallizable: Each selection of subset of variables can be independent, hence trees for Random Forests can be calculated independently.
+    + Less likely to overfit the data since in each iteration only a smaller set of variables are selected
+    
+  + Disadvantages:
+    + Interpretability becomes difficult as only a subset of variables are selected for each iteration.
+    + Addition of a new tunable parameter i.e the number of variables to be chosen. Performance will depend on the value of parameter.
+    + Potentially more bias in construction of each tree as we only consider a subset of variables.
+    
+  + One can introduce additional tree variation in the forest by selecting a subset of training data in each iteration. The results are equivalent to randomly selecting subsets of variables.
+
+2. Q2
+  If number of predictors are greater than the number of observations in the training sample, then to some extent we have an ill-posed problem. Here are some of the challenges:
+    + Many of the predictors might not have any contribution in the sample points.
+    + Not enough points to get a joint distribution of variables.
+    
+  + Regularization helps this by constraining the number of variables chosen or the coefficients of variables chosen for building the functions.
+  
+  + Benefits of regularization
+      + Regularization also will help when the output response is only dependent on few input parameters, but measurements of many extraneous variables are available.
+      + Regularization also helps in minimizing the impact of noise.
+  
+  + Disadvantages of regularization:
+      + Regularization requires prior knowledge e.g # of useful variables, # of variables with zero or near-zero coefficients. These parameters go in choosing the regularizing function. The priors could be easily be wrong. For e.g for best subset selection we have to choose the number of variables at each iteration. If the true number of dependent variables  are larger than the subsets we chose, the output will have a high error rate.
+      
+  + Sparsity is a reasonable assumption in boosting context because.. TBD
+  
+  + Is it always? Why why not?
+
+6. Q6
   + 6a.
   
     ```{r}
