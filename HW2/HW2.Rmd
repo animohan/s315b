@@ -23,11 +23,12 @@ knitr::opts_chunk$set(cache=TRUE)
   + One can introduce additional tree variation in the forest by selecting a subset of training data in each iteration. The results are equivalent to randomly selecting subsets of variables.
 
 2. Q2
-  If number of predictors are greater than the number of observations in the training sample, then to some extent we have an ill-posed problem. Here are some of the challenges:
-    + Many of the predictors might not have any contribution in the sample points.
-    + Not enough points to get a joint distribution of variables.
+  If number of predictors are greater than the number of observations in the training sample, then to an extent we have an ill-posed problem. Here are some of the challenges:
+    + High variability in the estimates of risk when evaluated on different random samples
+    + Some of the predictors are guaranteed not to not have any contribution in the sample points.
+
     
-  + Regularization helps this by constraining the number of variables chosen or the coefficients of variables chosen for building the functions.
+  + Regularization helps here by placing a restriction on the joint solution values. i.e it helps by constraining the number of variables chosen or the coefficients of variables chosen for building the functions.
   
   + Benefits of regularization
       + Regularization also will help when the output response is only dependent on few input parameters, but measurements of many extraneous variables are available.
@@ -39,6 +40,20 @@ knitr::opts_chunk$set(cache=TRUE)
   + Sparsity is a reasonable assumption in boosting context because.. TBD
   
   + Is it always? Why why not?
+  
+  
+3. +Q3
+  ![](h2q3.jpg)
+  
+  
+  
+4. + Q4
+  ![](h2q4.jpg)
+
+
+
+5.  + Q5
+  ![](h2q5.jpg)
 
 6. Q6
   + 6a.
