@@ -23,7 +23,8 @@ knitr::opts_chunk$set(cache=TRUE)
   + One can introduce additional tree variation in the forest by selecting a subset of training data in each iteration. The results are equivalent to randomly selecting subsets of variables.
 
 2. Q2
-  If number of predictors are greater than the number of observations in the training sample, then to an extent we have an ill-posed problem. Here are some of the challenges:
+
+If number of predictors are greater than the number of observations in the training sample, then to an extent we have an ill-posed problem. Here are some of the challenges:
     + High variability in the estimates of risk when evaluated on different random samples
     + Some of the predictors are guaranteed not to not have any contribution in the sample points.
 
@@ -37,9 +38,14 @@ knitr::opts_chunk$set(cache=TRUE)
   + Disadvantages of regularization:
       + Regularization requires prior knowledge e.g # of useful variables, # of variables with zero or near-zero coefficients. These parameters go in choosing the regularizing function. The priors could be easily be wrong. For e.g for best subset selection we have to choose the number of variables at each iteration. If the true number of dependent variables  are larger than the subsets we chose, the output will have a high error rate.
       
-  + Sparsity is a reasonable assumption in boosting context because.. TBD
+  + Sparsity is a reasonable assumption in boosting as this method relies on a limited number of weak classifiers. 
   
-  + Is it always? Why why not?
+    There are two possiblities:
+      + Actual distribution is not sparse: In this scenario, making the sparsity assumption would impact the results significantly. However, if the actual distribution is not sparse, most methods including Boosting would have problem dealing with the data.
+      
+      + Actual distribution is sparse: In this scenario, ground truth matches our assumption and boosting will work well here
+  
+  + Sparsity might be  a reasonable assumption for boosting but might not a reasoble assumption for many other methods. Results are generally poor when sparsity assumptions are made and the distributuon is not sparse.
   
   
 3. +Q3
