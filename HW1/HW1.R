@@ -19,7 +19,7 @@ lang=factor(ModIncome$lang,levels=1:3, labels=c("English","Spanish","Other"))
 
 FinalInc=data.frame(Inc=Inc,sex=sex,marital=marital,age=age,edu=edu,occ=occ, dwelltime=dwelltime, dual=dual, hh=hh, hh18=hh18,house=house, hometype=hometype,ethnic=ethnic, lang=lang)
 
-incfit=rpart(Inc~.-Inc,FinalInc, method='class', cp=0.001)
+incfit=rpart(Inc~.-Inc,FinalInc, method='class')
 plot(incfit)
 text(incfit)
 

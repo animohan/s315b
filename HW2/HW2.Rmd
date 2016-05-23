@@ -2,7 +2,7 @@
 title: "Hw2"
 author: "Anish Mohan"
 date: "May 17, 2016"
-output: html_document
+output: word_document
 ---
 
 ```{r setup, include=FALSE}
