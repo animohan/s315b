@@ -1,0 +1,54 @@
+---
+title: "HW3"
+output: html_document
+---
+1.
+2.
+3.
+4.
+5.
+```{r}
+
+library(nnet)
+
+inspam=read.csv("Spam_Train.txt")
+spname<-c ("make", "address", "all", "3d", "our", "over", "remove",
+              "internet","order", "mail", "receive", "will",
+              "people", "report", "addresses","free", "business",
+              "email", "you", "credit", "your", "font","000","money",
+              "hp", "hpl", "george", "650", "lab", "labs",
+              "telnet", "857", "data", "415", "85", "technology", "1999",
+              "parts","pm", "direct", "cs", "meeting", "original", "project",
+              "re","edu", "table", "conference", ";", "(", "[", "!", "$", "#",
+              "CAPAVE", "CAPMAX", "CAPTOT","type")
+colnames(inspam)=spname
+inspam.type=inspam$type
+
+x=inspam[sample(nrow(inspam)),]
+x=scale(x)
+x=data.frame(x)
+colnames(x)=spname
+    
+inspamtest=read.csv("Spam.Test.txt")
+spname<-c ("make", "address", "all", "3d", "our", "over", "remove",
+              "internet","order", "mail", "receive", "will",
+              "people", "report", "addresses","free", "business",
+              "email", "you", "credit", "your", "font","000","money",
+              "hp", "hpl", "george", "650", "lab", "labs",
+              "telnet", "857", "data", "415", "85", "technology", "1999",
+              "parts","pm", "direct", "cs", "meeting", "original", "project",
+              "re","edu", "table", "conference", ";", "(", "[", "!", "$", "#",
+              "CAPAVE", "CAPMAX", "CAPTOT","type")
+    
+colnames(inspamtest)=spname
+w=inspamtest[sample(nrow(inspamtest)),]
+w.type=w$type
+w=scale(w)
+w=data.frame(w)
+colnames(w)=spname
+
+  
+nn1=nnet(type~.,data=x, size=10)
+nn1.predict=predict(nn1, newdata = w) 
+table(w.type, nn1.predict)
+```
