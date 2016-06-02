@@ -22,33 +22,75 @@ spname<-c ("make", "address", "all", "3d", "our", "over", "remove",
               "re","edu", "table", "conference", ";", "(", "[", "!", "$", "#",
               "CAPAVE", "CAPMAX", "CAPTOT","type")
 colnames(inspam)=spname
-inspam.type=inspam$type
 
 x=inspam[sample(nrow(inspam)),]
-x=scale(x)
+inspam.type=x$type
+
+x=scale(x, center=TRUE, scale=TRUE)
 x=data.frame(x)
 colnames(x)=spname
+x["type"]=as.factor(inspam.type)
     
 inspamtest=read.csv("Spam.Test.txt")
-spname<-c ("make", "address", "all", "3d", "our", "over", "remove",
-              "internet","order", "mail", "receive", "will",
-              "people", "report", "addresses","free", "business",
-              "email", "you", "credit", "your", "font","000","money",
-              "hp", "hpl", "george", "650", "lab", "labs",
-              "telnet", "857", "data", "415", "85", "technology", "1999",
-              "parts","pm", "direct", "cs", "meeting", "original", "project",
-              "re","edu", "table", "conference", ";", "(", "[", "!", "$", "#",
-              "CAPAVE", "CAPMAX", "CAPTOT","type")
-    
 colnames(inspamtest)=spname
 w=inspamtest[sample(nrow(inspamtest)),]
 w.type=w$type
-w=scale(w)
+
+w=scale(w,center=TRUE, scale=TRUE)
 w=data.frame(w)
 colnames(w)=spname
+w["type"]=as.factor(w.type)
 
-  
-nn1=nnet(type~.,data=x, size=10)
-nn1.predict=predict(nn1, newdata = w) 
-table(w.type, nn1.predict)
+#Find the 
+for(i in 1:10){  
+  nn1=nnet(type~.,data=x, size=i, maxit=5000, decay=0.0, trace=F)
+  nn1.predict=predict(nn1, newdata = w,type="class") 
+  nn1.out=nn1.predict
+  u=matrix(data=0,2,2)
+  u=table(nn1.out, w.type)
+  k=(u[1,2]+u[2,1])/(sum(u))
+  print(paste0(k))
+}
+
+
+for(j in seq(0,1,0.1)){  
+  nn1=nnet(type~.,data=x, size=8, maxit=5000, decay=j, trace=F)
+  nn1.predict=predict(nn1, newdata = w,type="class") 
+  nn1.out=nn1.predict
+  u=matrix(data=0,2,2)
+  u=table(nn1.out, w.type)
+  k=(u[1,2]+u[2,1])/(sum(u))
+  print(paste0(k))
+}
+min.err=0.1
+min.size=NA
+min.decay=NA
+min.thresh=NA
+
+for(i in 1:10){
+  for(j in seq(0,1,0.1)){
+    for(k in seq(0,1,0.1)){  
+      nn1=nnet(type~.,data=x, size=i, maxit=500, decay=j, trace=F)
+      nn1.predict=predict(nn1, newdata = w,type="raw") 
+      nn1.out=rep(0,length(nn1.predict))
+      nn1.out[nn1.predict>=k]=1
+      #print(paste0("Decay: ",j, "Threshold: ",k))
+      err=sum(nn1.out!=w.type)/(sum(nn1.out!=w.type)+sum(nn1.out==w.type))
+      if(err<min.err){
+        min.size=i
+        min.decay=j
+        min.thresh=k
+        min.err=err
+        }
+      #print(paste0(err))
+    }
+  }
+}
+
+min.err
+min.size
+min.decay
+min.thresh
+
+
 ```
