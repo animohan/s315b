@@ -70,7 +70,7 @@ min.thresh=NA
 for(i in 1:10){
   for(j in seq(0,1,0.1)){
     for(k in seq(0,1,0.1)){  
-      nn1=nnet(type~.,data=x, size=i, maxit=500, decay=j, trace=F)
+      nn1=nnet(type~.,data=x, size=i, maxit=5000, decay=j, trace=F)
       nn1.predict=predict(nn1, newdata = w,type="raw") 
       nn1.out=rep(0,length(nn1.predict))
       nn1.out[nn1.predict>=k]=1
