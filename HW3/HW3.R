@@ -27,8 +27,6 @@ w$type=as.factor(as.factor(inspamtest$type))
 w[,1:57]=scale(w[,1:57],center=TRUE, scale=TRUE)
 w=data.frame(w)
 colnames(w)=spname
-
-
 w.type=w$type
 
 #Find the best size

@@ -8,10 +8,28 @@ knitr::opts_chunk$set(cache=TRUE)
 ```
 
 
-1.
-2.
-3.
-4.
+1. Q1
+
+  ![](Q1P1.jpg)
+  ![](Q1P2.jpg)
+  ![](Q1P3.jpg)
+  ![](Q1P4.jpg)
+
+
+2. Q2
+
+  ![](Q2P1.jpg)
+  ![](Q2P2.jpg)
+  ![](Q2P3.jpg)
+
+3. Q3
+
+  ![](Q3P1.jpg)
+
+4. Q4
+
+  ![](Q4P1.jpg)
+
 5. Q5. 
   
     + 5a.
@@ -64,7 +82,8 @@ for(i in 1:10){
 print(paste0("Minimum Error is with # of hidden nodes = ", 8))
 ```
 
-     + By using a # of hidden nodes as 8, we get  overall error rate ~4-5%
+
+      + By using a # of hidden nodes as 8, we get  overall error rate ~4-5%
 
   + 5b. 
 
@@ -102,6 +121,7 @@ err=sum(vote!=w.type)/(length(nn1.out))
 print(paste0("Error using the majority of votes is  ", err))
 ```
 
+
       + Best Model:
         + Decay: 0.6
         + Number of hidden units: 8
@@ -127,5 +147,6 @@ for(k in seq(0,1,0.1)){
       print(paste0("Threshold= ", k , " Proportion of good mails misclassified is: ", u[3][1]/(u[1][1]+u[3][1]) ))
 }
 ```
+
 
       + By using a Threshold of 90% of classifiying an email as spam, we can get misclassification of good email as spam down to <1% error rate.
